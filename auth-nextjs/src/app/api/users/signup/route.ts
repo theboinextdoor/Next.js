@@ -1,52 +1,44 @@
-import {connect} from "@/dbConfig/dbConfig";
+import { connect } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
-import bcryptjs from "bcryptjs"
+import bcryptjs from "bcryptjs";
 
+// Connect the signup page to the database.
+connect();
 
-
-export async function POST(request: NextRequest){
+export async function POST(request: NextRequest) {
     try {
-        const reqBody = await request.json()
-        console.log(reqBody)
-        const {username , email , password} = reqBody;
+        const reqBody = await request.json();
+        console.log(reqBody);
+        const { username, email, password } = reqBody;
 
-
-        // check if user is already exist or not 
-        const user = await User.findOne({email})
-        if(user){
-            return NextResponse.json({error: "User already exists"}, {status : 400})
+        // Check if user already exists.
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return NextResponse.json({ error: "User already exists" }, { status: 400 });
         }
 
-        
-        // password Hashing
+        // Password Hashing
         const salt = await bcryptjs.genSalt(10);
-        const hashedPassword = await bcryptjs.hash(password , salt)
-        
-        
-        // saving the user Data to the database
+        const hashedPassword = await bcryptjs.hash(password, salt);
+
+        // Save the user data to the database.
         const newUser = new User({
             username,
             email,
-            password : hashedPassword,
-        })
-
-        // we will save the data to the database
+            password: hashedPassword,
+        });
         const savedUser = await newUser.save();
-        console.log(savedUser)
+        console.log(savedUser);
 
-
-        // return the response to the client that user is successfully created....
-        return NextResponse.json(
-            {
-                message : "User created successfully",
-                success : true,
-                savedUser
-            })
-
-
-
-    } catch (error : any) {
-        return NextResponse.json({error : error.message}, {status : 500})
+        // Return the response to the client that user is successfully created.
+        return NextResponse.json({
+            message: "User created successfully",
+            success: true,
+            savedUser,
+        });
+    } catch (error:any) {
+        console.error("Error:", error.message);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
