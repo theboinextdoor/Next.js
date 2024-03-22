@@ -53,10 +53,6 @@ export async function POST(request:NextRequest){
             })
         
             return response       //this response is doing all the handeling , it will send the message and handeling the cookies 
-            
-
-        
-
 
     }catch(error : any){
         return NextResponse.json({error: error.message},{status: 500})
