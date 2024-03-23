@@ -4,7 +4,8 @@ import bcrypt from 'bcryptjs'
 
 
 
-export const sendEmial = async({email, emailType, userId}:any) => {
+export const sendEmail = async({email, emailType, userId}:any) => {
+   
     try{
 
         // create a hashed token 
@@ -39,7 +40,7 @@ export const sendEmial = async({email, emailType, userId}:any) => {
 
 
           const mailoptions = {
-            from : "",
+            from : "process.env.MY_EMAIL",
             to : email,
             subject : email.type === "VERIFY" ? "Verify your email" : "Reset Your password" ,
             html : `<p>Click <a href="${process.env.DOMAIN}/verifyemail?token=${hashedToken}">herer</a> to ${emailType === "VERIFY" ? "verify your email" : "reset your password"}</p>`
